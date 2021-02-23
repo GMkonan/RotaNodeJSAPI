@@ -1,27 +1,12 @@
+import 'reflect-metadata'; //necessario vir primeiro
 import express from 'express';
+import "./database"; //se vc n especificar, por padrao ele importa o arquivo index da pasta (no caso index.ts)
+import { router } from './routes';
 
 const app = express();
 
-/**
- * GET => Busca
- * POST => Salvar
- * PUT => Alterar
- * DELETE => Deletar
- * PATCH => Alteracao especifica
- */
+app.use(express.json());
+app.use(router);
 
-app.get("/", (request, response) => {
-    
-    return response.json({message: "Hello World"})
-})
-
-// 1 param => Rota(Recurso dentro da API)
-// 2 param => resquest, response
-
-app.post("/", (request, response) => {
-    //Recebeu dados para salvar
-    return response.json({message: "Os dados foram salvos!"})
-})
-
- app.listen(3333, () => console.log("server is running"))
+app.listen(3333, () => console.log("server is running"))
 
