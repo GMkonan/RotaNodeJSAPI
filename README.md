@@ -110,7 +110,7 @@ defina iss dentro do ormconfig.json
 Para criar uma migration eh só rodar esse comando (caso tenha feito o script "typeorm" no package.json)
 
 ```
-yarn typeorm migrations:create -n NomeDaMigration //no caso da nossa API o nome foi CreateUsers
+yarn typeorm migration:create -n NomeDaMigration //no caso da nossa API o nome foi CreateUsers
 ```
 
 #### dentro da migration
@@ -202,3 +202,144 @@ Obs: O constructor foi feito pois existem dois cenários, o de criação e o de 
 ### Regras no controller
 
 Podemos fazer regras no controller para, por exemplo, procurar um user no banco de dados e caso ele esteja lá retornar q ele já existe com um erro 400. E foi isso q foi feito na aplicação.
+
+## Aula 3 Comentários/Anotações
+- criado arquivos separados para repositórios
+
+- refatoramos controllers
+
+- fizemos as surveys
+
+- aprendemos e fizemos testes
+
+
+
+Obs: Fizemos um novo tipo de função no SurveyController que é o show, podemos usar o show
+
+no arquivo routes.ts e fazer uma requisição GET em "/surveys" para ver todas as surveys do
+
+banco de dados.
+
+
+
+alt + shift + o -> tira todos os imports que não estão sendo usados
+
+
+
+ctrl + d -> executar esse shortcut enquanto esta com uma palavra selecionada ira fazer com que quando você renomeá-la você ira renomear tudo no código que tiver o mesmo nome
+
+
+
+### Testes automatizados
+
+
+
+#### Instalações
+
+```
+
+yarn add jest @types/jest -D
+
+```
+
+```
+
+yarn add ts-jest supertest @types/supertest -D
+
+```
+
+#### Configurações
+
+```
+
+yarn jest --init
+
+```
+
+Respostas usadas nesse projeto: 
+
+```
+
+√ Would you like to use Jest when running "test" script in "package.json"? ... yes
+
+√ Would you like to use Typescript for the configuration file? ... yes
+
+√ Choose the test environment that will be used for testing » node
+
+√ Do you want Jest to add coverage reports? ... no
+
+√ Which provider should be used to instrument code for coverage? » v8
+
+√ Automatically clear mock calls and instances between every test? ... yes
+
+```
+
+
+
+Mudanças no arquivo jest.config.ts
+
+bail para true (não deixa os testes terminarem se um deles der errado)
+
+```ts
+
+bail: true
+
+```
+
+preset para "ts-jest" q nos instalamos
+
+```ts
+
+preset: "ts-jest"
+
+```
+
+comentado a linha testEnvironment: "node"
+
+```ts
+
+// testEnvironment: "node",
+
+```
+
+testMatch descomentado e com o seguinte valor:
+
+(define onde ficaram os arquivos de teste, no caso eles ficaram dentro
+
+de uma pasta __ tests __ no root e serão arquivos **.test.ts)
+
+```ts
+
+testMatch: [
+
+     "**/__tests__/**.test.ts"
+
+   ],
+
+```
+
+
+
+#### Scripts
+
+Devemos criar dois novos scripts, o posttest e o test
+
+
+
+**Config Windows**
+
+```json
+
+  "test": "cross-env NODE_ENV=test jest",
+
+  "posttest": "rimraf ./src/database/database.test.sqlite" 
+
+```
+
+Para funciona no windows o test devemos fazer esses passos, como dito por um membro da rocketseat:
+
+
+
+- Instale o pacote cross-env (https://www.npmjs.com/package/cross-env) para lidar com as variáveis ambiente, o comando é: yarn add cross-env -D ou npm install cross-env -D
+
+- Altere o script "test" no arquivo package.json para o seguinte: "test": "cross-env 

@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
-import { User } from '../models/User';
+import { getCustomRepository } from 'typeorm';
+import { UserRepository } from '../repositories/UsersRepository';
 
 class UserController {
     
     async create(request: Request, response: Response) {
         const { name, email } = request.body
 
-        const usersRepository = getRepository(User);
+        const usersRepository = getCustomRepository(UserRepository);
 
         //usa o findOne pq n eh pra ter mais de um registro entao n tem pq buscar mais de um
         //SELECT * FROM USERS WERE EMAIL = "EMAIL"
@@ -29,8 +29,8 @@ class UserController {
 
         await usersRepository.save(user);
 
-        return response.json(user)
+        return response.status(201).json(user)
     }
 }
 
-export { UserController }
+export { UserController };
