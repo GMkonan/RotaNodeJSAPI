@@ -23,6 +23,13 @@ yarn add @types/express -D
 ```
 
 @types para aparecer auto complete de opções do express
+Obs: se um pacote (como no caso o express) tem um @types para instalar, aparece um ... embaixo do nome dele na importação
+```ts
+import { Request, Response } from "express";
+      //                            ^
+      //                            |
+      //                      ... bem aqui
+```
 
 ```
 yarn add ts-node-dev -D 
@@ -343,3 +350,48 @@ Para funciona no windows o test devemos fazer esses passos, como dito por um mem
 - Instale o pacote cross-env (https://www.npmjs.com/package/cross-env) para lidar com as variáveis ambiente, o comando é: yarn add cross-env -D ou npm install cross-env -D
 
 - Altere o script "test" no arquivo package.json para o seguinte: "test": "cross-env 
+
+## Aula 4 Comentários/Anotações
+
+Podemos passar abaixo da nossa tabela na migration as foreign Keys (como array) e passar alguns atributos a elas
+```ts
+foreignKeys: [
+                    {
+                        name: "FKUser",
+                        referencedTableName: "Users",
+                        referencedColumnNames: ["id"],
+                        columnNames: ["user_id"],
+                        onDelete: "CASCADE",
+                        onUpdate: "CASCADE"
+                    }
+                ]
+```
+Obs: Note que onDelete e onUpdate CASCADE, serve para atualizar ou remover esse dado na nossa tabela (no caso surveys_users) caso ele seja atualizado ou deletado
+dentro de sua propria tabela (no caso a tabela users)
+
+### Envio de emails
+Como eh uma aplicacao teste e precisamos usar um servico SMTP iremos utilizar o Ethereal (fake SMTP service)
+Iremos dividir o nosso servico de enviar email em uma pasta e arquivo separado
+#### constructor em classes
+Obs: Utilizamos muitas vezes o constructor, mas so para deixar explicado, o constructor eh um metodo que eh executado assim que uma classe eh chamada/instanciada
+
+#### .then e async/await
+.then eh uma forma antiga de fazer o async/await. Nele a resposta n eh retornada, e sim fica dentro do metodo .then
+As vezes precisamos utilizar essa forma antiga pq, por exemplo, o constructor n aceita async/await.
+#### Instalações
+```
+yarn add nodemailer
+```
+```
+yarn add @types/nodemailer
+```
+
+### Customizacao do template de email
+Iremos utilizar o handlebars para fazer o template pq ele pode receber as variaveis para dps preenchermos com os dados q estao no banco de dados, deixando o template personalizado para quem recebe-lo.
+Obs: extensoes .hbs sao arquivos handlebars, q nem nosso npsMail.hbs
+#### Instalações
+```
+yarn add handlebars
+```
+
+#### Dando a nota no email
