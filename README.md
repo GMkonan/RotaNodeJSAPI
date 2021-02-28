@@ -394,4 +394,149 @@ Obs: extensoes .hbs sao arquivos handlebars, q nem nosso npsMail.hbs
 yarn add handlebars
 ```
 
-#### Dando a nota no email
+## Aula 4 Comentários/Anotações
+
+ctrl + shift + l ---> seleciona todos os iguais para modificar ao mesmo tempo
+
+### Refatorações
+Trocamos o where do surveyUserAlreadyExists para apenas um objeto, para no envio do email ele fazer a checagem da existencia do usuario **E** do valor como nulo, e n checar um **OU** o outro
+```ts
+where: {user_id: user.id, value: null},
+```
+
+Trocamos o id em variables para ```id: ""``` para q ele seja checado no surveyUserAlreadyExists,
+se o usuario ja existe esse id vai ser sobreescrito pelo id do surveyUserAlreadyExists, se n existir
+a gente da o id que acabou de ser criado em ``` surveyUsersRepository.save``` 
+Lembre-se de trocar para "id" no template tambem (npsMail.hbs) 
+
+### Resposta do email
+Crie o AnswerController, dentro dele iremos fazer uso de route params e query params para pegar a resposta do usuario e salvar (tem uma explicacao nos comentarios de la!)
+
+Nos routes crie uma rota para answers com route param 
+```ts
+router.get("/answers/:value", answerController.execute);
+```
+
+### calculo NPS
+Agora crie o NpsController para podermos fazer o calculo de nps (explicacao do calculo la)
+
+Obs: Lembre de procurar o user pelo id e pela resposta do valor tambem, passe o value como Not(IsNull()) para nao pegar pessoas q ainda n responderam a pesquisa
+
+Obs2: Passei todos os elementos como resposta na rota do nps apenas para podermos ver tudo, mas o calculo eh apenas o ultimo (o np: calculate)
+
+agora eh so criar a rota com o route param para usar
+```ts
+router.get("/nps/:survey_id", npsController.execute);
+```
+
+### Validacoes
+
+#### Instalacoes
+```
+yarn add yup
+```
+
+Como a parte de validacoes tem mais comentario do q codigo irei deixar o codigo aqui
+
+No userController:
+
+import:
+```ts
+import * as yup from 'yup';
+```
+Dentro do execute abaixo do ```const {name, email} = request.body```
+```ts
+ // nos podemos passar os erros aqui ou deixar os defaults do yup
+        const schema = yup.object().shape({
+            name: yup.string().required("Nome é obrigatorio"),
+            email: yup.string().email().required("Email é obrigatorio")
+        })
+
+        //Primeira forma de fazer validacao (usamos nossa propria mensagem aqui)
+        /*if(!(await schema.isValid(request.body))) {
+            return response.status(400).json({error: "Validation Failed!"})
+        } */
+
+        //segunda forma de fazer validacao, (usamos as mensagens do yup ou as definidas
+        // no schema em cima, ou seja, essa forma eh mais especifica nos erros)
+        try{ //usamos o abortEarly como false para mostrar todos os erros, e n so o primeiro q encontrar
+            await schema.validate(request.body, {abortEarly: false});
+        } catch (err) {
+            return response.status(400).json({error: err})
+        }
+```
+
+### Refatoracoes extras!
+#### Remocao do banco de dados
+Vamos remover o posttest dos nossos scripts do package.json para n precisarmos usar comandos
+especificos de um sistema operacional, agora iremos apagar as rows da db teste direto nos testes.
+Dentro de Survey.test.ts e User.test.ts iremos incluir o seguinte:
+```ts
+afterAll( async () => {
+        const connection = getConnection();
+        await connection.dropDatabase();
+        await connection.close();
+    })
+```
+
+Agora o db teste n ira ser removido, mas tudo dentro dele sera, por isso n precisamos mas apagar ele.
+
+Outra coisa q devemos fazer eh botar a flag -i no nosso script de test, agora ficara assim:
+```json
+"test": "cross-env NODE_ENV=test jest -i"
+```
+Ou no linux...
+```json
+"test": "NODE_ENV=test jest -i"
+```
+#### Melhoria nos erros dos controllers
+Crie uma pasta chamada errors com um arquivo ```AppError.ts```, Agora ao inves de retornar erros nos controllers iremos deixar os retornos para o proprio App fazer.
+Obs: Entre no AppError.ts para entender melhor, podemos passar um statusCode diferente caso precise,
+mas como todos nessa aplicacao foram 400 nos botamos o statusCode = 400 direto no AppError.
+
+Agora podemos ir no erros dos controllers e usar a seguinte sintaxe:
+```ts
+throw new AppError("survey User does not exists!");
+```
+AppError eh a classe q criamos para cuidar dos erros (com o message e o statusCode).
+O throw eh usado para jogar o erro para cima, ou seja quem ira lidar com o erro eh quem esta chamando o controller e n o controller em si, quem esta chamando o controller eh o router.ts e quem cuida/usa o router.ts e o App.ts eh si!
+
+Agora so temos q fazer um handler (midleware) para o App.ts saber oq fazer com o erro, primeiro
+instale o express-async-errors
+```
+yarn add express-async-errors
+```
+importe abaixo da importacao do express:
+```ts
+import 'express-async-errors';
+```
+Agora no app.ts importe Request, Response e NextFunction e passe na funcao como abaixo
+O if eh responsavel por pegar erros q sao do tipo AppError (ou seja, os q nos definimos com o "throw new AppError) e por isso q ele tem esse "instaceof AppError". Para qualquer outro tipo de erro (q provavelmente sera de servidor por isso o status 500) nos damos uma resposta "internal server error (mensagem do erro)". agora pronto! Todos os erros agora sao "organizados" pelo app.ts.
+```ts
+app.use((err: Error, request: Request, response: Response, _next: NextFunction) => {
+    if(err instanceof AppError) { //instaceof eh para dizer "se for um erro do tipo AppError"
+        return response.status(err.statusCode).json({
+            message: err.message
+        })
+    }
+
+    return response.status(500).json({
+        status: "Error",
+        message: `Internal server error ${err.message}`
+    })
+});
+```
+
+## Conclusao
+Tudo concluido. Agora temos uma API para calculo NPS funcional desenvolvido na semana NLW, Agora so irei anotar algumas extensoes usadas pela instrutora nas aulas:
+
+### Extensoes
+Tema: Omni
+Tema dos icones de arquivos e folders: Material Icon Theme
+Obs: em settings.json podemos definir q pastas com nomes especificoes vao ter certos icones :)
+Fonte: JetBrainsMono (define no settings.json)
+Code spell Checker: acho q o nome ja diz
+
+### Programas usados durante a semana
+Insomnia: Para fazer as requisicoes
+BeeKeeper studio: Para olharmos as tabelas no banco de dados
