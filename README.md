@@ -2,7 +2,7 @@
 NPS calculator API
 </h1>
 <p align="center">
-This app was made during the NLW (Next Level Week), a one week event for Brazilian Developers. It's a simple Backend application that can be used to calculate a company's NPS.
+This app was made during the NLW (Next Level Week), a one week event for Brazilian Developers. It's a simple Backend application that can be used to calculate a company's NPS.(Net Promoter Score)
 </p>
 
 <p align="center">
@@ -18,10 +18,12 @@ This app was made during the NLW (Next Level Week), a one week event for Brazili
   <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen?color=blue">
 </p>
 
+<p align="center">
 <img src="example.png"/>
+</p>
 
 ## :information_source: Description
-This API is used to send emails with surveys to users in the database. Then you can check with the API how many users respond to the specific survey and how good the nps calculation (made entirely automatically) is.
+This API is used to send emails with surveys to users in the database. Then you can check with the API how many users respond to the specific survey and how good the NPS calculation (made entirely automatically) is.
 ## 🛠 Technologies
 - [Typescript](https://typescriptlang.org/)
 - [express](https://expressjs.com)
