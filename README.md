@@ -35,7 +35,7 @@ This API is used to send emails with surveys to users in the database. Then you 
 
 ### 📝 Todolist
 - [x] Good documentation.
-- [ ] Styled Mail Template.
+- [x] Styled Mail Template.
 ## 🚀 Getting started
 
 You need to have **Git** and **yarn** already installed in your machine
@@ -51,6 +51,7 @@ cd RotaNodeJSAPI
 yarn
 ```
 ### ⚙ Executing
+Important, The port being used is 3333, if you want to change it just go in ```server.ts``` and put the port you want to use.
 ```bash
 # Executing is really simple
 yarn dev
